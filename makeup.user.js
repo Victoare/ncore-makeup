@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         nCore - makeup
 // @namespace    https://github.com/Victoare/ncore-makeup
-// @version      0.1
+// @version      0.2
 // @description  Ncore púder és szájfény
 // @author       Victoare
 // @match        https://ncore.cc/torrents.php*
@@ -107,10 +107,11 @@
                 if(html.length==0 || noId){
                     html.push('<div class="box_borito_img">' + (torrents[j].coverImg ? '<img src="' + torrents[j].coverImg + '">' : 'Nincs borító') + '</div>');
                     if(!noId){
-                        $(torrents[j].mainRow).find('.torrent_txt').removeClass('torrent_txt').addClass('torrent_txt2');
                         imdbInfoRow = $(torrents[j].mainRow).find('.torrent_txt_also');
                     }
                 }
+                $(torrents[j].mainRow).find('.torrent_txt').removeClass('torrent_txt').addClass('torrent_txt2');
+                $(torrents[j].mainRow).remove('.torrent_txt_also');
                 html.push(torrents[j].mainRow);
                 html.push(torrents[j].detailRow);
                 if(noId){
