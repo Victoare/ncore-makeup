@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         nCore - makeup
 // @namespace    https://github.com/Victoare/ncore-makeup
-// @version      0.2
+// @version      0.3
 // @description  Ncore púder és szájfény
 // @author       Victoare
 // @match        https://ncore.cc/torrents.php*
@@ -12,6 +12,14 @@
 
 (function() {
     'use strict';
+
+    // ===========================================================================================
+    // CSS overload
+    // ===========================================================================================
+
+    // extract theme from stylesheet path     <link rel="stylesheet" href="https://static.ncore.cc/styles/default2/style_sslv11.css" type="text/css">
+    var theme = $('link[rel="stylesheet"][href^="https://static.ncore.cc/styles/"]').attr('href').match(/\/styles\/([^\/]*)\/style_/)[1];
+    $('body').addClass('theme_' + theme);
 
     // overload some styles
     var myStyle = document.createElement('style');
@@ -43,50 +51,58 @@
 
     cssMod.insertRule('.torrent_lenyilo_tartalom .banner { zoom: 50%; }');
 
-    // new Table header
+    // theme specific overrides
+    //cssMod.insertRule('.theme_brutecore .banner { zoom: 500%; }');
+
+    // ===========================================================================================
+    // Modify table header, Add cover, remove uploader column
+    // ===========================================================================================
+
     $('.box_alcimek_all').prepend(`
-<div class="box_alap">
-<table class="alcim">
-	<tbody><tr>
-	<td><div class="alcim_bal"></div></td>
-	<td><div class="box_borito">Borító</div></td>
-	<td><div class="alcim_jobb"></div></td>
-	</tr>
-</tbody></table>
-</div>
+      <div class="box_alap">
+        <table class="alcim"><tbody><tr>
+          <td><div class="alcim_bal"></div></td>
+          <td><div class="box_borito">Borító</div></td>
+          <td><div class="alcim_jobb"></div></td>
+        </tr></tbody></table>
+      </div>
     `);
 
-    // remove uploader column
     $('.box_alcimek_all .box_alap_utolso').remove();
     $('.box_alcimek_all .box_alap:last').removeClass('box_alap').addClass('box_alap_utolso');
     $('.box_torrent_all .box_feltolto2').remove();
 
-    // Extract torrent infos
+    // ===========================================================================================
+    // Extract torrent info, detach originals from GUI
+    // ===========================================================================================
+
     var torrents = [];
-    var rowDivs = $('.box_torrent_all>div');
+    $('.box_torrent_all>div[style="clear:both;"]').remove();
+    var $rowDivs = $('.box_torrent_all>div');
+
     var getImdbID = function(row){
         var attr = $(row).find('.infolink').attr('href');
         return attr ? attr.match(/\/(tt[0-9]*)/)[1] : '';
     }
     var getCoverImg = function(row){
-        var attr = $(rowDivs[i+1]).find('img.infobar_ico').attr('onmouseover');
+        var attr = $(row).find('img.infobar_ico').attr('onmouseover');
         return attr ? attr.match(/'([^']*)'/)[1] : '';
     }
 
-    for(var i=0;i<rowDivs.length-3;i+=4){
+    for(var i=0;i<$rowDivs.length-1;i+=2){
         torrents.push({
-            imdbId    : getImdbID(rowDivs[i+1]),
-            coverImg  : getCoverImg(rowDivs[i+1]),
-            mainRow   : rowDivs[i+1],
-            detailRow : rowDivs[i+3],
+            imdbId    : getImdbID($rowDivs[i]),
+            coverImg  : getCoverImg($rowDivs[i]),
+            mainRow   : $rowDivs[i],
+            detailRow : $rowDivs[i+1],
         });
     }
 
-    // remove clear div-s and detach info rows
-    for(var i=0; i<rowDivs.length; i+=2){
-        $(rowDivs[i+0]).remove();
-        $(rowDivs[i+1]).detach();
-    }
+    $rowDivs.detach();
+
+    // ===========================================================================================
+    // Rebuild table using IMDB ID if available
+    // ===========================================================================================
 
     // Distinct IMDB ids
     var distinct = function(arr){
@@ -100,20 +116,32 @@
     //re-populate list
     for(var i=0;i<idList.length;i++){
         var html = [];
-        var imdbInfoRow = '';
+        var $siterank = null;
         var noId = idList[i]=='';
         for(var j=0;j<torrents.length;j++){
             if(torrents[j].imdbId==idList[i]){
+                var $mainRow = $(torrents[j].mainRow);
                 if(html.length==0 || noId){
-                    html.push('<div class="box_borito_img">' + (torrents[j].coverImg ? '<img src="' + torrents[j].coverImg + '">' : 'Nincs borító') + '</div>');
-                    if(!noId){
-                        imdbInfoRow = $(torrents[j].mainRow).find('.torrent_txt_also');
+                    html.push('<div class="box_borito_img">' + (torrents[j].coverImg ? '<img src="' + torrents[j].coverImg + '">' : '') + '</div>');
+                }
+                if(!$siterank){
+                    $siterank = $mainRow.find('.siterank');
+                }
+                if(torrents[j].coverImg){
+                    $mainRow.find('.infobar').remove();
+                }
+
+                if(!noId){
+                    $mainRow.find('.siterank').remove();
+                    if(!$mainRow.find('.torrent_txt_also').html()){
+                        $mainRow.find('.torrent_txt_also').remove();
+                        $mainRow.find('.torrent_txt').removeClass('torrent_txt').addClass('torrent_txt2');
                     }
                 }
-                $(torrents[j].mainRow).find('.torrent_txt').removeClass('torrent_txt').addClass('torrent_txt2');
-                $(torrents[j].mainRow).remove('.torrent_txt_also');
-                html.push(torrents[j].mainRow);
+
+                html.push($mainRow);
                 html.push(torrents[j].detailRow);
+
                 if(noId){
                     html.push('<div style="clear:both;"></div>');
                 }
@@ -121,8 +149,8 @@
         }
         if(!noId){
             $(html).find('.torrent_txt_also').remove(); // remove imdb infos
-            if(imdbInfoRow){
-                html.push('<div class="box_nagy imdbinfo">' + imdbInfoRow.html() + '</div>');
+            if($siterank){
+                html.push('<div class="box_nagy imdbinfo">' + $siterank.html() + '</div>');
             }
             html.push('<div style="clear:both;"></div>');
         }
