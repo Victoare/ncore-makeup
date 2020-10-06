@@ -6,7 +6,8 @@ Egy kis púder és szájfény.
 ## Najó, de mit csinál
 
 Jelenleg:  
-- IMDB id-k alapján csoportosítja a torrent listában a találatokat és egy borítóval ellátott sorba teszi őket. Csak azt tudja átcsoportosítani ami a 100 soros listában van, le lehetne kérdezni az adott filmhez az összes verziót (mint a torrent adatlapján), de nem akarom bombázni a szervert.
+- IMDB id-k alapján csoportosítja a torrent listában a találatokat és egy borítóval ellátott sorba teszi őket. (Csak azt tudja átcsoportosítani ami a 100 soros listában van)
+- Egy kattintással a listából le lehetne kérdezni az adott filmhez az összes verziót. (a sorrendezés nem fog megegyezni az eredeti listával, és nem lesznek ikonok, viszont ugyanúgy le lehet kérni a részletes adatokat és könyvjelzőzni is lehet)
 
 Az alap témával van fejlesztve, nem mindegyikkel működik. De egy jó pull-request megoldhatja :D
 
