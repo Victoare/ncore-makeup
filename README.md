@@ -8,6 +8,8 @@ Egy kis púder és szájfény.
 Jelenleg:  
 - IMDB id-k alapján csoportosítja a torrent listában a találatokat és egy borítóval ellátott sorba teszi őket. Csak azt tudja átcsoportosítani ami a 100 soros listában van, le lehetne kérdezni az adott filmhez az összes verziót (mint a torrent adatlapján), de nem akarom bombázni a szervert.
 
+Az alap témával van fejlesztve, nem mindegyikkel működik. De egy jó pull-request megoldhatja :D
+
 ## Akarom, hogyan?
 
 Chrome-hoz Tampermonkey kiegészítőt fel kell tenni, majd klikk erre a linkre:  
