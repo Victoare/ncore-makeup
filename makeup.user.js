@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         nCore - makeup
 // @namespace    https://github.com/Victoare/ncore-makeup
-// @version      0.3
+// @version      0.3.1
 // @description  Ncore púder és szájfény
 // @author       Victoare
 // @match        https://ncore.cc/torrents.php*
@@ -124,19 +124,13 @@
                 if(html.length==0 || noId){
                     html.push('<div class="box_borito_img">' + (torrents[j].coverImg ? '<img src="' + torrents[j].coverImg + '">' : '') + '</div>');
                 }
-                if(!$siterank){
-                    $siterank = $mainRow.find('.siterank');
-                }
-                if(torrents[j].coverImg){
-                    $mainRow.find('.infobar').remove();
-                }
+                if(!$siterank) $siterank = $mainRow.find('.siterank');
+                if(torrents[j].coverImg) $mainRow.find('.infobar').remove();
+                if(!noId) $mainRow.find('.siterank').remove();
 
-                if(!noId){
-                    $mainRow.find('.siterank').remove();
-                    if(!$mainRow.find('.torrent_txt_also').html()){
-                        $mainRow.find('.torrent_txt_also').remove();
-                        $mainRow.find('.torrent_txt').removeClass('torrent_txt').addClass('torrent_txt2');
-                    }
+                if(!$mainRow.find('.torrent_txt_also').html()){
+                    $mainRow.find('.torrent_txt_also').remove();
+                    $mainRow.find('.torrent_txt').removeClass('torrent_txt').addClass('torrent_txt2');
                 }
 
                 html.push($mainRow);
