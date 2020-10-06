@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         nCore - makeup
-// @namespace    http://tampermonkey.net/
+// @namespace    https://github.com/Victoare/ncore-makeup
 // @version      0.1
 // @description  Ncore púder és szájfény
 // @author       Victoare
