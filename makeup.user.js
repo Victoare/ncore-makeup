@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         nCore - makeup
 // @namespace    https://github.com/Victoare/ncore-makeup
-// @version      0.4.1
+// @version      0.4.2
 // @description  Ncore púder és szájfény
 // @author       Victoare
 // @match        https://ncore.cc/torrents.php*
@@ -189,41 +189,45 @@
     function GetDetails(torrentData, $infoBar){
         var id = torrentData.imdbId.substr(2); // remove "tt" from the id
         var torrentsOnScreen = distinct($('.box_torrent_all a[href^="torrents.php?action=details&id="]').map(function(){return $(this).attr('href').match(/id=(\d+)/)[1]}));
-        $.get("ajax.php?action=other_versions&id="+id+"&fid="+torrentData.torrentId+"&details=1",function(data){
+        $infoBar.find('.ajaxGetOtherVersions').html('<img src="https://static.ncore.cc/styles/ajax.gif">');
+        $.get("ajax.php?action=other_versions&id="+id+"&fid="+torrentData.torrentId+"&details=1")
+            .fail(function(){
+              $infoBar.find('.ajaxGetOtherVersions').html('Más verziók keresése');
+            })
+            .done(function(data){
             var $data = $(data);
             var html = $data.find('.box_torrent_mini2').map(function(){
                 var $itm = $(this);
                 var torrentID = $itm.find('a[href^="torrents.php?action=details&id="]').attr('href').match(/id=(\d+)/)[1];
                 if(torrentsOnScreen.indexOf(torrentID)>-1) return '';
                 var title = $itm.find('.box_txt_ownfree a').attr('title');
-                return `
-<div class="box_torrent">
-  <div class="box_nagy2">
-    <div class="box_nev2">
-	  <div class="tabla_szoveg">
-	    <div style="cursor:pointer" onclick="konyvjelzo('${torrentID}');" class="torrent_konyvjelzo2"></div>
-	    <div class="torrent_txt2">
-          <a href="torrents.php?action=details&amp;id=${torrentID}" onclick="torrent(${torrentID}); return false;" title="${title}"><nobr>${title}</nobr></a>
-	    </div>
-	  </div>
-    </div>
-    <div class="users_box_sepa"></div>
-	<div class="box_feltoltve2">${$itm.find('.box_feltoltve_other_short').html()}</div>
-	<div class="users_box_sepa"></div>
-	<div class="box_meret2">${$itm.find('.box_meret2').html()}</div>
-	<div class="users_box_sepa"></div>
-	<div class="box_d2">${$itm.find('.box_d2').html()}</div>
-	<div class="users_box_sepa"></div>
-	<div class="box_s2">${$itm.find('.box_s2').html()}</div>
-	<div class="users_box_sepa"></div>
-	<div class="box_l2">${$itm.find('.box_l2').html()}</div>
-    <div class="users_box_sepa"></div>
-  </div>
-  <div class="box_alap_img">
-	${$itm.find('.box_alap_img').html()}
-  </div>
-</div>
-<div class="torrent_lenyilo" style="display:none;" id="${torrentID}"></div>`;
+                return `<div class="box_torrent">
+						  <div class="box_nagy2">
+							<div class="box_nev2">
+							  <div class="tabla_szoveg">
+								<div style="cursor:pointer" onclick="konyvjelzo('${torrentID}');" class="torrent_konyvjelzo2"></div>
+								<div class="torrent_txt2">
+								  <a href="torrents.php?action=details&amp;id=${torrentID}" onclick="torrent(${torrentID}); return false;" title="${title}"><nobr>${title}</nobr></a>
+								</div>
+							  </div>
+							</div>
+							<div class="users_box_sepa"></div>
+							<div class="box_feltoltve2">${$itm.find('.box_feltoltve_other_short').html()}</div>
+							<div class="users_box_sepa"></div>
+							<div class="box_meret2">${$itm.find('.box_meret2').html()}</div>
+							<div class="users_box_sepa"></div>
+							<div class="box_d2">${$itm.find('.box_d2').html()}</div>
+							<div class="users_box_sepa"></div>
+							<div class="box_s2">${$itm.find('.box_s2').html()}</div>
+							<div class="users_box_sepa"></div>
+							<div class="box_l2">${$itm.find('.box_l2').html()}</div>
+							<div class="users_box_sepa"></div>
+						  </div>
+						  <div class="box_alap_img">
+							${$itm.find('.box_alap_img').html()}
+						  </div>
+						</div>
+						<div class="torrent_lenyilo" style="display:none;" id="${torrentID}"></div>`;
             });
             $(html.get().join('')).insertBefore($infoBar);
             $infoBar.find('.ajaxGetOtherVersions').remove();
