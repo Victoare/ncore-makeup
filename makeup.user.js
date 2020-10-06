@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         nCore - makeup
 // @namespace    https://github.com/Victoare/ncore-makeup
-// @version      0.4
+// @version      0.4.1
 // @description  Ncore púder és szájfény
 // @author       Victoare
 // @match        https://ncore.cc/torrents.php*
@@ -174,21 +174,27 @@
         $(this).prepend($(this).find('>div:last'));
     });
 
-    // rearrange odd/even row styles
-    $('.box_torrent_all .box_nagy, .box_torrent_all .box_nagy2').each(function(idx, item){ $(item).toggleClass('box_nagy',idx%2==0).toggleClass('box_nagy2',idx%2==1) });
-    $('.box_torrent_all .torrent_lenyilo, .box_torrent_all .torrent_lenyilo2').each(function(idx, item){ $(item).toggleClass('torrent_lenyilo',idx%2==1).toggleClass('torrent_lenyilo2',idx%2==0) });
+    reArrangeOddEvenClasses();
 
     // ===========================================================================================
     // Functions to call
     // ===========================================================================================
 
+    // rearrange odd/even row styles
+    function reArrangeOddEvenClasses(){
+      $('.box_torrent_all .box_nagy, .box_torrent_all .box_nagy2').each(function(idx, item){ $(item).toggleClass('box_nagy',idx%2==0).toggleClass('box_nagy2',idx%2==1) });
+      $('.box_torrent_all .torrent_lenyilo, .box_torrent_all .torrent_lenyilo2').each(function(idx, item){ $(item).toggleClass('torrent_lenyilo',idx%2==1).toggleClass('torrent_lenyilo2',idx%2==0) });
+    }
+
     function GetDetails(torrentData, $infoBar){
         var id = torrentData.imdbId.substr(2); // remove "tt" from the id
+        var torrentsOnScreen = distinct($('.box_torrent_all a[href^="torrents.php?action=details&id="]').map(function(){return $(this).attr('href').match(/id=(\d+)/)[1]}));
         $.get("ajax.php?action=other_versions&id="+id+"&fid="+torrentData.torrentId+"&details=1",function(data){
             var $data = $(data);
             var html = $data.find('.box_torrent_mini2').map(function(){
                 var $itm = $(this);
                 var torrentID = $itm.find('a[href^="torrents.php?action=details&id="]').attr('href').match(/id=(\d+)/)[1];
+                if(torrentsOnScreen.indexOf(torrentID)>-1) return '';
                 var title = $itm.find('.box_txt_ownfree a').attr('title');
                 return `
 <div class="box_torrent">
@@ -221,6 +227,7 @@
             });
             $(html.get().join('')).insertBefore($infoBar);
             $infoBar.find('.ajaxGetOtherVersions').remove();
+            reArrangeOddEvenClasses();
         });
     }
 })();
