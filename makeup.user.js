@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         nCore - makeup
 // @namespace    https://github.com/Victoare/ncore-makeup
-// @version      0.4.2
+// @version      0.4.3
 // @description  Ncore púder és szájfény
 // @author       Victoare
 // @match        https://ncore.cc/torrents.php*
@@ -35,10 +35,10 @@
     // table items
     cssMod.insertRule('.box_borito_img     { width: 182px; border: 1px solid #828282; float: left; margin-top: 1px; min-height: 32px; text-align: center;}');
     cssMod.insertRule('.box_borito_img img { width: 182px; }');
-    cssMod.insertRule('.box_nev2           { width: 359px; height: 32px; }');
-    cssMod.insertRule('.box_nagy, .box_nagy2 { width: 660px; float: right; }');
+    cssMod.insertRule('.box_nev2           { width: 358px; height: 32px; }');
+    cssMod.insertRule('.box_nagy, .box_nagy2 { width: 659px; float: right; }');
     cssMod.insertRule('.box_nagy.imdbinfo, .box_nagy2.imdbinfo { width:701px; padding:6px; height:auto; }');
-    cssMod.insertRule('.torrent_txt, .torrent_txt2      { text-overflow: ellipsis; width: 294px; overflow:hidden;}'); //314px for single icon, 294 for double
+    cssMod.insertRule('.torrent_txt, .torrent_txt2      { text-overflow: ellipsis; width: 293px; overflow:hidden;}'); //313px for single icon, 293 for double
     cssMod.insertRule('.torrent_txt a, .torrent_txt2 a  { text-overflow: ellipsis; }');
     cssMod.insertRule('.box_borito         { width: 164px; }');
     cssMod.insertRule('.box_nev            { width: 255px; }');
