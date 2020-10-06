@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         nCore - makeup
 // @namespace    https://github.com/Victoare/ncore-makeup
-// @version      0.3.1
+// @version      0.3.2
 // @description  Ncore púder és szájfény
 // @author       Victoare
 // @match        https://ncore.cc/torrents.php*
@@ -36,7 +36,7 @@
     cssMod.insertRule('.box_nev2           { width: 359px; height: 32px; }');
     cssMod.insertRule('.box_nagy, .box_nagy2 { width: 660px; float: right; }');
     cssMod.insertRule('.box_nagy.imdbinfo, .box_nagy2.imdbinfo { width:701px; padding:6px; }');
-    cssMod.insertRule('.torrent_txt, .torrent_txt2      { text-overflow: ellipsis; width: 314px; overflow:hidden;}');
+    cssMod.insertRule('.torrent_txt, .torrent_txt2      { text-overflow: ellipsis; width: 294px; overflow:hidden;}'); //314px for single icon, 294 for double
     cssMod.insertRule('.torrent_txt a, .torrent_txt2 a  { text-overflow: ellipsis; }');
     cssMod.insertRule('.box_borito         { width: 164px; }');
     cssMod.insertRule('.box_nev            { width: 255px; }');
