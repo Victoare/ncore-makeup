@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         nCore - makeup
 // @namespace    https://github.com/Victoare/ncore-makeup
-// @version      0.4.5
+// @version      0.4.6
 // @description  Ncore púder és szájfény
 // @author       Victoare
 // @match        https://ncore.cc/torrents.php*
@@ -146,6 +146,8 @@
           $mainRow.find('.torrent_txt_also').remove();
           $mainRow.find('.torrent_txt').removeClass('torrent_txt').addClass('torrent_txt2');
         }
+
+        $mainRow.find('nobr').text($mainRow.find('a').attr('title')); //replace shortend text with proper one
 
         html.push($mainRow);
         html.push(torrents[j].detailRow);
