@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         nCore - makeup
 // @namespace    https://github.com/Victoare/ncore-makeup
-// @version      0.4.4
+// @version      0.4.5
 // @description  Ncore púder és szájfény
 // @author       Victoare
 // @match        https://ncore.cc/torrents.php*
@@ -50,13 +50,13 @@
   cssMod.insertRule('.torrent_lenyilo  .torrent_lenyilo_tartalom  { width: 693px; }');
   cssMod.insertRule('.torrent_lenyilo2 .torrent_lenyilo_tartalom  { width: 693px; }');
   cssMod.insertRule('.torrent_leiras { width: 666px; }');
-  cssMod.insertRule('.hr_stuff           { width: 693px; }');
+  cssMod.insertRule('.hr_stuff       { width: 693px; }');
 
   cssMod.insertRule('.torrent_lenyilo_tartalom .banner { zoom: 50%; }');
 
   // theme specific overrides
   cssMod.insertRule('.theme_brutecore .box_nagy, .theme_brutecore .box_nagy2 { width: 650px; padding-left: 0; }');
-  cssMod.insertRule('.theme_brutecore .box_alap_img { float: left; position: inherit; }');
+  cssMod.insertRule('.theme_brutecore .box_alap_img { position: inherit; }');
   cssMod.insertRule('.theme_brutecore .torrent_lenyilo_lehetoseg { width: 700px; }');
   cssMod.insertRule('.theme_brutecore .torrent_konyvjelzo2 { margin: 16px 5px 0 0; }');
 
