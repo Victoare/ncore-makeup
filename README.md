@@ -9,6 +9,12 @@ Jelenleg:
 - IMDB id-k alapján csoportosítja a torrent listában a találatokat és egy borítóval ellátott blokkba szervezi őket. (Csak azt tudja átcsoportosítani ami a listában van)
 - Egy kattintással a listából le lehetne kérdezni az adott filmhez az összes verziót. (a sorrendezés nem fog megegyezni az eredeti listával, és nem lesznek jelző ikonok, viszont ugyanúgy le lehet kérni a részletes adatokat a névre kattintva és könyvjelzőzni is lehet)
 
+Eredeti:  
+![Eredeti](/images/Original.png)
+
+Csoportosított:  
+![Makeup](/images/Grouped.png)
+
 ## Akarom, hogyan?
 
 Kell valamilyen userscript támogatás, pl [Tampermonkey](https://www.tampermonkey.net/) ami mindenféle böngészőhöz elérhető. (fejlesztve/tesztelve jelenleg Chrome alatt van) 
