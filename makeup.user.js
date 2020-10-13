@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         nCore - makeup
 // @namespace    https://github.com/Victoare/ncore-makeup
-// @version      0.4.6
+// @version      0.4.7
 // @description  Ncore púder és szájfény
 // @author       Victoare
 // @match        https://ncore.cc/torrents.php*
@@ -160,6 +160,7 @@
     if (!noId) {
       if ($siterank) {
         var $infoBar = $('<div class="box_nagy imdbinfo">');
+        $siterank.find('span:first').text($siterank.find('span:first').attr('title'));
         $infoBar.append($siterank);
         $infoBar.append($('<div class="ajaxGetOtherVersions">Más verziók keresése</div>').click(
           (function (ftd, $ib) { return function () { GetDetails(ftd, $ib); } })(firstTorrentData, $infoBar)
