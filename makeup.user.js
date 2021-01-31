@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         nCore - makeup
 // @namespace    https://github.com/Victoare/ncore-makeup
-// @version      0.4.7
+// @version      0.4.8
 // @description  Ncore púder és szájfény
 // @author       Victoare
-// @match        https://ncore.cc/torrents.php*
+// @match        https://ncore.pro/torrents.php*
 // @downloadURL  https://raw.githubusercontent.com/Victoare/ncore-makeup/main/makeup.user.js
 // @updateURL    https://raw.githubusercontent.com/Victoare/ncore-makeup/main/makeup.user.js
 // @grant        none
@@ -17,8 +17,8 @@
   // CSS overload
   // ===========================================================================================
 
-  // extract theme from stylesheet path     <link rel="stylesheet" href="https://static.ncore.cc/styles/default2/style_sslv11.css" type="text/css">
-  var theme = $('link[rel="stylesheet"][href^="https://static.ncore.cc/styles/"]').attr('href').match(/\/styles\/([^\/]*)\/style_/)[1];
+  // extract theme from stylesheet path     <link rel="stylesheet" href="https://static.ncore.pro/styles/default2/style_sslv11.css" type="text/css">
+  var theme = $('link[rel="stylesheet"][href^="https://static.ncore.pro/styles/"]').attr('href').match(/\/styles\/([^\/]*)\/style_/)[1];
   $('body').addClass('theme_' + theme);
 
   // overload some styles
@@ -196,7 +196,7 @@
   function GetDetails(torrentData, $infoBar) {
     var id = torrentData.imdbId.substr(2); // remove "tt" from the id
     var torrentsOnScreen = distinct($('.box_torrent_all a[href^="torrents.php?action=details&id="]').map(function () { return $(this).attr('href').match(/id=(\d+)/)[1] }));
-    $infoBar.find('.ajaxGetOtherVersions').html('<img src="https://static.ncore.cc/styles/ajax.gif">');
+    $infoBar.find('.ajaxGetOtherVersions').html('<img src="https://static.ncore.pro/styles/ajax.gif">');
     $.get("ajax.php?action=other_versions&id=" + id + "&fid=" + torrentData.torrentId + "&details=1")
       .fail(function () {
         $infoBar.find('.ajaxGetOtherVersions').html('Más verziók keresése');
