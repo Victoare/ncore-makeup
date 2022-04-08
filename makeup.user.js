@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         nCore - makeup
 // @namespace    https://github.com/Victoare/ncore-makeup
-// @version      0.5
+// @version      0.5.1
 // @description  Ncore púder és szájfény
 // @author       Victoare
 // @match        https://ncore.pro/torrents.php*
@@ -140,9 +140,10 @@
   if(specOrder){
       var newestFirst = (d1, d2) => (d1 > d2)?-1:(d1 < d2)?1:0;
       var oldestFirst = (t1, t2) => newestFirst(t1.uploaded, t2.uploaded)*-1;
+      var byImdbId = (id)=>(t)=>t.imdbId==id;
       idList.sort((a,b)=>{
-          var a_minDate = torrents.filter((t)=>t.imdbId==a).sort(oldestFirst)[0].uploaded;
-          var b_minDate = torrents.filter((t)=>t.imdbId==b).sort(oldestFirst)[0].uploaded;
+          var a_minDate = torrents.filter(byImdbId(a)).sort(oldestFirst)[0].uploaded;
+          var b_minDate = torrents.filter(byImdbId(b)).sort(oldestFirst)[0].uploaded;
           return newestFirst(a_minDate, b_minDate);
       });
   }
@@ -157,7 +158,16 @@
       if (torrents[j].imdbId == idList[i]) {
         var $mainRow = torrents[j].$mainRow;
         if (html.length == 0 || noId) {
-          html.push(`<div class="box_borito_img" id="borito_img_${torrents[j].imdbId}">${(torrents[j].coverImg ? '<img src="' + torrents[j].coverImg + '">' : '')}</div>`);
+            if(noId){
+                html.push(`<div class="box_borito_img"></div>`);
+            }else{
+                var src = torrents[j].coverImg;
+                if(!src){
+                    var imgs = torrents.filter((t)=>t.imdbId==idList[i] && t.coverImg).map((t)=>t.coverImg);
+                    if(imgs.length) src = imgs[0];
+                }
+                html.push(`<div class="box_borito_img" id="borito_img_${torrents[j].imdbId}">${(src ? '<img src="' + src + '">' : '')}</div>`);
+            }
         }
         if (firstTorrentData == null) firstTorrentData = torrents[j];
         if (!$siterank) $siterank = $mainRow.find('.siterank');
@@ -171,7 +181,9 @@
 
         $mainRow.find('nobr').text($mainRow.find('a').attr('title')); //replace shortend text with proper one
 
-        $mainRow.attr('onmouseover', `$('#borito_img_${torrents[j].imdbId} img').attr('src', '${torrents[j].coverImg}')`);
+        if(!noId && torrents[j].coverImg){
+          $mainRow.attr('onmouseover', `$('#borito_img_${torrents[j].imdbId} img').attr('src', '${torrents[j].coverImg}')`);
+        }
 
         html.push($mainRow);
         html.push(torrents[j].detailRow);
@@ -233,32 +245,32 @@
           if (torrentsOnScreen.indexOf(torrentID) > -1) return '';
           var title = $itm.find('.box_txt_ownfree a').attr('title');
           return `<div class="box_torrent">
-			  <div class="box_nagy2">
-				<div class="box_nev2">
-				  <div class="tabla_szoveg">
-					<div style="cursor:pointer" onclick="konyvjelzo('${torrentID}');" class="torrent_konyvjelzo2"></div>
-					<div class="torrent_txt2">
-					  <a href="torrents.php?action=details&amp;id=${torrentID}" onclick="torrent(${torrentID}); return false;" title="${title}"><nobr>${title}</nobr></a>
-					</div>
-				  </div>
-				</div>
-				<div class="users_box_sepa"></div>
-				<div class="box_feltoltve2">${$itm.find('.box_feltoltve_other_short').html()}</div>
-				<div class="users_box_sepa"></div>
-				<div class="box_meret2">${$itm.find('.box_meret2').html()}</div>
-				<div class="users_box_sepa"></div>
-				<div class="box_d2">${$itm.find('.box_d2').html()}</div>
-				<div class="users_box_sepa"></div>
-				<div class="box_s2">${$itm.find('.box_s2').html()}</div>
-				<div class="users_box_sepa"></div>
-				<div class="box_l2">${$itm.find('.box_l2').html()}</div>
-				<div class="users_box_sepa"></div>
-			  </div>
-			  <div class="box_alap_img">
-				${$itm.find('.box_alap_img').html()}
-			  </div>
-			</div>
-			<div class="torrent_lenyilo" style="display:none;" id="${torrentID}"></div>`;
+                      <div class="box_nagy2">
+                        <div class="box_nev2">
+                          <div class="tabla_szoveg">
+                            <div style="cursor:pointer" onclick="konyvjelzo('${torrentID}');" class="torrent_konyvjelzo2"></div>
+                            <div class="torrent_txt2">
+                              <a href="torrents.php?action=details&amp;id=${torrentID}" onclick="torrent(${torrentID}); return false;" title="${title}"><nobr>${title}</nobr></a>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="users_box_sepa"></div>
+                        <div class="box_feltoltve2">${$itm.find('.box_feltoltve_other_short').html()}</div>
+                        <div class="users_box_sepa"></div>
+                        <div class="box_meret2">${$itm.find('.box_meret2').html()}</div>
+                        <div class="users_box_sepa"></div>
+                        <div class="box_d2">${$itm.find('.box_d2').html()}</div>
+                        <div class="users_box_sepa"></div>
+                        <div class="box_s2">${$itm.find('.box_s2').html()}</div>
+                        <div class="users_box_sepa"></div>
+                        <div class="box_l2">${$itm.find('.box_l2').html()}</div>
+                        <div class="users_box_sepa"></div>
+                      </div>
+                      <div class="box_alap_img">
+                        ${$itm.find('.box_alap_img').html()}
+                      </div>
+                    </div>
+                    <div class="torrent_lenyilo" style="display:none;" id="${torrentID}"></div>`;
         });
         $(html.get().join('')).insertBefore($infoBar);
         $infoBar.find('.ajaxGetOtherVersions').remove();
