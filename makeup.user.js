@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         nCore - makeup
 // @namespace    https://github.com/Victoare/ncore-makeup
-// @version      0.4.8
+// @version      0.5
 // @description  Ncore púder és szájfény
 // @author       Victoare
 // @match        https://ncore.pro/torrents.php*
@@ -20,6 +20,11 @@
   // extract theme from stylesheet path     <link rel="stylesheet" href="https://static.ncore.pro/styles/default2/style_sslv11.css" type="text/css">
   var theme = $('link[rel="stylesheet"][href^="https://static.ncore.pro/styles/"]').attr('href').match(/\/styles\/([^\/]*)\/style_/)[1];
   $('body').addClass('theme_' + theme);
+
+  var qs = (new URL(document.location)).searchParams; // https://ncore.pro/torrents.php?miszerint=name&hogyan=DESC&tipus=hd_hun&mire=202&miben=name
+  var qsOrderBy   = qs.get("miszerint");
+  var qsOrderDesc = qs.get("hogyan") != 'ASC';
+  var specOrder   = (!qsOrderBy || qsOrderBy=='fid') && qsOrderDesc; //dátum szerint, csökkenő, de csoporton belül a legrégebbi dátum szerint, így előre kerülnek az új feltöltések
 
   // overload some styles
   var myStyle = document.createElement('style');
@@ -98,6 +103,11 @@
     var attr = $row.find('a[onclick^="torrent("]').attr('onclick');
     return attr ? attr.match(/\((\d*)\)/)[1] : '';
   }
+  var getUploadDate = function ($row) {
+    var val = $row.find('.box_feltoltve2').html()
+    var p = val.split(/-|<br>|:/g).map((n)=>parseInt(n,10));
+    return new Date(p[0], p[1]-1, p[2], p[3], p[4], p[5]).getTime() / 1000; // unix timestamp like 1649433945
+  }
 
   for (var i = 0; i < $rowDivs.length - 1; i += 2) {
     var $mainRow = $($rowDivs[i]);
@@ -105,6 +115,7 @@
       imdbId: getImdbID($mainRow),
       torrentId: getTorrentId($mainRow),
       coverImg: getCoverImg($mainRow),
+      uploaded: getUploadDate($mainRow),
       $mainRow: $mainRow,      // .box_torrent
       detailRow: $rowDivs[i + 1], // .torrent_lenyilo v. .torrent_lenyilo2
     });
@@ -123,7 +134,18 @@
       if (ret.indexOf(arr[i]) == -1) ret.push(arr[i]);
     return ret;
   }
+
   var idList = distinct(torrents.map(function (t) { return t.imdbId; }));
+
+  if(specOrder){
+      var newestFirst = (d1, d2) => (d1 > d2)?-1:(d1 < d2)?1:0;
+      var oldestFirst = (t1, t2) => newestFirst(t1.uploaded, t2.uploaded)*-1;
+      idList.sort((a,b)=>{
+          var a_minDate = torrents.filter((t)=>t.imdbId==a).sort(oldestFirst)[0].uploaded;
+          var b_minDate = torrents.filter((t)=>t.imdbId==b).sort(oldestFirst)[0].uploaded;
+          return newestFirst(a_minDate, b_minDate);
+      });
+  }
 
   //re-populate list
   for (var i = 0; i < idList.length; i++) {
@@ -135,7 +157,7 @@
       if (torrents[j].imdbId == idList[i]) {
         var $mainRow = torrents[j].$mainRow;
         if (html.length == 0 || noId) {
-          html.push('<div class="box_borito_img">' + (torrents[j].coverImg ? '<img src="' + torrents[j].coverImg + '">' : '') + '</div>');
+          html.push(`<div class="box_borito_img" id="borito_img_${torrents[j].imdbId}">${(torrents[j].coverImg ? '<img src="' + torrents[j].coverImg + '">' : '')}</div>`);
         }
         if (firstTorrentData == null) firstTorrentData = torrents[j];
         if (!$siterank) $siterank = $mainRow.find('.siterank');
@@ -148,6 +170,8 @@
         }
 
         $mainRow.find('nobr').text($mainRow.find('a').attr('title')); //replace shortend text with proper one
+
+        $mainRow.attr('onmouseover', `$('#borito_img_${torrents[j].imdbId} img').attr('src', '${torrents[j].coverImg}')`);
 
         html.push($mainRow);
         html.push(torrents[j].detailRow);
@@ -209,32 +233,32 @@
           if (torrentsOnScreen.indexOf(torrentID) > -1) return '';
           var title = $itm.find('.box_txt_ownfree a').attr('title');
           return `<div class="box_torrent">
-						  <div class="box_nagy2">
-							<div class="box_nev2">
-							  <div class="tabla_szoveg">
-								<div style="cursor:pointer" onclick="konyvjelzo('${torrentID}');" class="torrent_konyvjelzo2"></div>
-								<div class="torrent_txt2">
-								  <a href="torrents.php?action=details&amp;id=${torrentID}" onclick="torrent(${torrentID}); return false;" title="${title}"><nobr>${title}</nobr></a>
-								</div>
-							  </div>
-							</div>
-							<div class="users_box_sepa"></div>
-							<div class="box_feltoltve2">${$itm.find('.box_feltoltve_other_short').html()}</div>
-							<div class="users_box_sepa"></div>
-							<div class="box_meret2">${$itm.find('.box_meret2').html()}</div>
-							<div class="users_box_sepa"></div>
-							<div class="box_d2">${$itm.find('.box_d2').html()}</div>
-							<div class="users_box_sepa"></div>
-							<div class="box_s2">${$itm.find('.box_s2').html()}</div>
-							<div class="users_box_sepa"></div>
-							<div class="box_l2">${$itm.find('.box_l2').html()}</div>
-							<div class="users_box_sepa"></div>
-						  </div>
-						  <div class="box_alap_img">
-							${$itm.find('.box_alap_img').html()}
-						  </div>
-						</div>
-						<div class="torrent_lenyilo" style="display:none;" id="${torrentID}"></div>`;
+			  <div class="box_nagy2">
+				<div class="box_nev2">
+				  <div class="tabla_szoveg">
+					<div style="cursor:pointer" onclick="konyvjelzo('${torrentID}');" class="torrent_konyvjelzo2"></div>
+					<div class="torrent_txt2">
+					  <a href="torrents.php?action=details&amp;id=${torrentID}" onclick="torrent(${torrentID}); return false;" title="${title}"><nobr>${title}</nobr></a>
+					</div>
+				  </div>
+				</div>
+				<div class="users_box_sepa"></div>
+				<div class="box_feltoltve2">${$itm.find('.box_feltoltve_other_short').html()}</div>
+				<div class="users_box_sepa"></div>
+				<div class="box_meret2">${$itm.find('.box_meret2').html()}</div>
+				<div class="users_box_sepa"></div>
+				<div class="box_d2">${$itm.find('.box_d2').html()}</div>
+				<div class="users_box_sepa"></div>
+				<div class="box_s2">${$itm.find('.box_s2').html()}</div>
+				<div class="users_box_sepa"></div>
+				<div class="box_l2">${$itm.find('.box_l2').html()}</div>
+				<div class="users_box_sepa"></div>
+			  </div>
+			  <div class="box_alap_img">
+				${$itm.find('.box_alap_img').html()}
+			  </div>
+			</div>
+			<div class="torrent_lenyilo" style="display:none;" id="${torrentID}"></div>`;
         });
         $(html.get().join('')).insertBefore($infoBar);
         $infoBar.find('.ajaxGetOtherVersions').remove();
