@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         nCore - makeup
 // @namespace    https://github.com/Victoare/ncore-makeup
-// @version      0.5.3
+// @version      0.5.4
 // @description  Ncore púder és szájfény
 // @author       Victoare
 // @match        https://ncore.pro/torrents.php*
@@ -93,8 +93,10 @@
 
   var getImdbID = function ($row) {
     var attr = $row.find('.infolink').attr('href');
-    var match = attr ? attr.match(/\/(ev\d{7}\/\d{4}(-\d)?|(ch|co|ev|nm|tt)\d{7,})/i) : [];
-    return match.length>0 ? match[1] : '';
+    if(!attr) return '';
+    var match = attr.match(/\/(ev\d{7}\/\d{4}(-\d)?|(ch|co|ev|nm|tt)\d{7,})/i);
+    if(!(match && match.length)) return '';
+    return match[1];
   }
   var getCoverImg = function ($row) {
     var attr = $row.find('img.infobar_ico').attr('onmouseover');
