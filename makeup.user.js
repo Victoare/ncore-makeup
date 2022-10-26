@@ -1,12 +1,13 @@
 // ==UserScript==
 // @name         nCore - makeup
 // @namespace    https://github.com/Victoare/ncore-makeup
-// @version      0.5.4
+// @version      0.5.5
 // @description  Ncore púder és szájfény
 // @author       Victoare
 // @match        https://ncore.pro/torrents.php*
 // @downloadURL  https://raw.githubusercontent.com/Victoare/ncore-makeup/main/makeup.user.js
 // @updateURL    https://raw.githubusercontent.com/Victoare/ncore-makeup/main/makeup.user.js
+// @require      http://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js
 // @grant        none
 // ==/UserScript==
 
