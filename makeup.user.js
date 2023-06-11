@@ -1,18 +1,68 @@
 // ==UserScript==
 // @name         nCore - makeup
 // @namespace    https://github.com/Victoare/ncore-makeup
-// @version      0.5.5
+// @version      0.5.6
 // @description  Ncore púder és szájfény
 // @author       Victoare
 // @match        https://ncore.pro/torrents.php*
 // @downloadURL  https://raw.githubusercontent.com/Victoare/ncore-makeup/main/makeup.user.js
 // @updateURL    https://raw.githubusercontent.com/Victoare/ncore-makeup/main/makeup.user.js
-// @require      http://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js
-// @grant        none
+// @require      https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js
+// @grant        GM_log
 // ==/UserScript==
+
+/* DEVNOTE:
+   Due to greasemonkey, it needs the "require-jquery", but with it added, the page's fancybox stopped working on chrome
+   needed to add "grant GM_log" which somehow fixes the issue.
+*/
 
 (function () {
   'use strict';
+
+  // ===========================================================================================
+  // Extract torrent info
+  // ===========================================================================================
+
+  var torrents = [];
+  var $rowDivs = $('.box_torrent_all>div[style!="clear:both;"]');
+
+  var getImdbID = function ($row) {
+    var attr = $row.find('.infolink').attr('href');
+    if(!attr) return '';
+    var match = attr.match(/\/(ev\d{7}\/\d{4}(-\d)?|(ch|co|ev|nm|tt)\d{7,})/i);
+    if(!(match && match.length)) return '';
+    return match[1];
+  }
+  var getCoverImg = function ($row) {
+    var attr = $row.find('img.infobar_ico').attr('onmouseover');
+    return attr ? attr.match(/'([^']*)'/)[1] : '';
+  }
+  var getTorrentId = function ($row) {
+    var attr = $row.find('a[onclick^="torrent("]').attr('onclick');
+    return attr ? attr.match(/\((\d*)\)/)[1] : '';
+  }
+  var getUploadDate = function ($row) {
+    var val = $row.find('.box_feltoltve2').html()
+    var p = val.split(/-|<br>|:/g).map((n)=>parseInt(n,10));
+    return new Date(p[0], p[1]-1, p[2], p[3], p[4], p[5]).getTime() / 1000; // unix timestamp like 1649433945
+  }
+
+  var hasIMDBid = false;
+  for (var i = 0; i < $rowDivs.length - 1; i += 2) {
+    var $mainRow = $($rowDivs[i]);
+    var imdbId = getImdbID($mainRow);
+    hasIMDBid |= imdbId.length>0;
+    torrents.push({
+      imdbId,
+      torrentId: getTorrentId($mainRow),
+      coverImg: getCoverImg($mainRow),
+      uploaded: getUploadDate($mainRow),
+      $mainRow: $mainRow,      // .box_torrent
+      detailRow: $rowDivs[i + 1], // .torrent_lenyilo v. .torrent_lenyilo2
+    });
+  }
+
+  if(!hasIMDBid) return; // if results contains no IMDB ID then don't alter the table
 
   // ===========================================================================================
   // CSS overload
@@ -85,46 +135,10 @@
   $('.box_torrent_all .box_feltolto2').remove();
 
   // ===========================================================================================
-  // Extract torrent info, detach originals from GUI
+  // Detach originals from GUI
   // ===========================================================================================
 
-  var torrents = [];
   $('.box_torrent_all>div[style="clear:both;"]').remove();
-  var $rowDivs = $('.box_torrent_all>div');
-
-  var getImdbID = function ($row) {
-    var attr = $row.find('.infolink').attr('href');
-    if(!attr) return '';
-    var match = attr.match(/\/(ev\d{7}\/\d{4}(-\d)?|(ch|co|ev|nm|tt)\d{7,})/i);
-    if(!(match && match.length)) return '';
-    return match[1];
-  }
-  var getCoverImg = function ($row) {
-    var attr = $row.find('img.infobar_ico').attr('onmouseover');
-    return attr ? attr.match(/'([^']*)'/)[1] : '';
-  }
-  var getTorrentId = function ($row) {
-    var attr = $row.find('a[onclick^="torrent("]').attr('onclick');
-    return attr ? attr.match(/\((\d*)\)/)[1] : '';
-  }
-  var getUploadDate = function ($row) {
-    var val = $row.find('.box_feltoltve2').html()
-    var p = val.split(/-|<br>|:/g).map((n)=>parseInt(n,10));
-    return new Date(p[0], p[1]-1, p[2], p[3], p[4], p[5]).getTime() / 1000; // unix timestamp like 1649433945
-  }
-
-  for (var i = 0; i < $rowDivs.length - 1; i += 2) {
-    var $mainRow = $($rowDivs[i]);
-    torrents.push({
-      imdbId: getImdbID($mainRow),
-      torrentId: getTorrentId($mainRow),
-      coverImg: getCoverImg($mainRow),
-      uploaded: getUploadDate($mainRow),
-      $mainRow: $mainRow,      // .box_torrent
-      detailRow: $rowDivs[i + 1], // .torrent_lenyilo v. .torrent_lenyilo2
-    });
-  }
-
   $rowDivs.detach();
 
   // ===========================================================================================
