@@ -7,7 +7,8 @@ Egy kis púder és szájfény.
 
 Jelenleg:  
 - IMDB id-k alapján csoportosítja a torrent listában a találatokat és egy borítóval ellátott blokkba szervezi őket. (Csak azt tudja átcsoportosítani ami a listában van)
-- Egy kattintással a listából le lehetne kérdezni az adott filmhez az összes verziót. (a sorrendezés nem fog megegyezni az eredeti listával, és nem lesznek jelző ikonok, viszont ugyanúgy le lehet kérni a részletes adatokat a névre kattintva és könyvjelzőzni is lehet)
+- Egy kattintással a listából le lehet kérdezni az adott filmhez az összes verziót. (a sorrendezés nem fog megegyezni az eredeti listával, és nem lesznek jelző ikonok, viszont ugyanúgy le lehet kérni a részletes adatokat a névre kattintva és könyvjelzőzni is lehet)
+- A lista rendezési elve (ha csak nincs külön a rendezés az oldalon módosítva): az egyes csoportban lévő legrégebbi elem dátuma szerint rendez csökkenőben, így hiába jön egy újabb release egy filmhez, az nem fog a lista elejére ugrani. Az oka, hogy könnyeb legyen kiszúrni az újonnan érkezett filmeket.
 
 Eredeti:  
 ![Eredeti](/images/Original.png)
