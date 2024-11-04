@@ -26,3 +26,10 @@ https://raw.githubusercontent.com/Victoare/ncore-makeup/main/makeup.user.js
 
 Az alap témával és brutecore-al van leginkább fejlesztve/tesztelve/használva, ezért simán előfordulhatnak hibák főleg más témáknál.  
 Lehet jelezni itt az issueknál vagy méginkább egy jó pull-request-el ;)
+
+## Tampermonkey - "This script was not executed yet"
+
+Úgy tűnik, hogy az 5.0.0 frissítés után csak akkor tudja futtatni a scriptet a tampermonkey ha a developer mód be van kapcsolva az extensionoknál.
+chrome://extensions oldalon jobb felül "Developer mode".
+Nem teljesen tudom, hogy ez milyen kockázatokat rejt, mindenki saját felelősséggel használja.
+Több infó: https://www.tampermonkey.net/faq.php?locale=en#Q209
